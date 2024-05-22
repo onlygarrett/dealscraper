@@ -1,0 +1,1 @@
+from dealscraper.config.handler import DealScraperConfigHandler
