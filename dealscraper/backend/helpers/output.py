@@ -13,14 +13,20 @@ class OutputGen:
 
     def __init__(
         self,
-        output_folder: str,
+        output_folder: Optional[str] = None,
+        logger_name: Optional[str] = None,
         message_title: Optional[str] = None,
-        message: Optional[str] = None,
+        message_format: Optional[str] = None,
     ) -> None:
+        
+        logger_name = logger_name or self.__class__.__name__
+        message_format = message_format or (
+            f"%(asctime)s - 1 - %(logger_name)s: - %(message)"
+        )
 
         self.logger = logging.getLogger(message_title)
         self.logger.setLevel(1)
-        format = logging.Formatter(message)
+        format = logging.Formatter(message_format)
         stdout_handler = logging.StreamHandler(sys.stdout)
         stdout_handler.setFormatter(format)
         self.logger.addHandler(stdout_handler)

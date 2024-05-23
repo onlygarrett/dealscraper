@@ -2,4 +2,8 @@
 
 import os
 import sys
-from .backend import dealscraper
+from dealscraper.backend import dealscraper
+
+
+if __name__ == "__main__":
+    dealscraper.DealScraper().scrape()

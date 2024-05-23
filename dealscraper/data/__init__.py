@@ -1,1 +1,1 @@
-from dealscraper.data.search_args import *
+from dealscraper.data.resources import *
