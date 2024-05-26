@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from dealscraper.backend.deal import Deal
+from dealscraper.backend.scraper import Deal
 from dealscraper.backend.helpers.output import OutputGen
 
 DuplicatedDeal = namedtuple(
@@ -14,12 +14,15 @@ DuplicatedDeal = namedtuple(
 
 
 class DealFilter(OutputGen):
-
+    """
+    Class for filtering deals.
+    This class provides methods for filtering deals based on various criteria.
+    """
     def __init__(
         self,
-        user_ignore_dict: Optional[Dict[str, str]] = None,
-        duplicate_games_dict: Optional[Dict[str, str]] = None,
-        max_release_date: Optional[datetime] = None,
+        ignored_games: Optional[Dict[str, str]] = None,
+        duplicate_games: Optional[Dict[str, str]] = None,
+        scrape_date: Optional[datetime] = None,
         log_level: int = logging.INFO,
         log_file: str = None,  # pyright: ignore
     ) -> None:
@@ -27,9 +30,9 @@ class DealFilter(OutputGen):
         Initialize DealFilter object.
 
         Parameters:
-        user_ignore_dict (Optional[Dict[str, str]]): A dictionary of game titles to ignore.
-        duplicate_games_dict (Optional[Dict[str, str]]): A dictionary of game titles to match for duplicates.
-        max_release_date (Optional[datetime]): The maximum release date for games to consider.
+        ignored_games (Optional[Dict[str, str]]): A dictionary of game titles to ignore.
+        duplicate_games (Optional[Dict[str, str]]): A dictionary of game titles to match for duplicates.
+        scrape_date (Optional[datetime]): The scrape date for games to consider.
         log_level (int): The log level for logging messages. Default is logging.INFO.
         log_file (str): The file to log messages to. Default is None.
 
@@ -41,9 +44,9 @@ class DealFilter(OutputGen):
             output_file=log_file,
         )
 
-        self.user_ignore_dict = user_ignore_dict or {}
-        self.duplicate_games_dict = duplicate_games_dict or {}
-        self.max_release_date = max_release_date
+        self.ignored_games = ignored_games or {}
+        self.duplicate_games = duplicate_games or {}
+        self.scrape_date = scrape_date
 
     # TODO: implement filter
     def apply_filter(
@@ -62,52 +65,52 @@ class DealFilter(OutputGen):
 
     def can_filter(self, deal: Deal, dupe_check: bool = True) -> bool:
         return bool(
-            (deal.title in self.user_ignore_dict)
+            (deal.title in self.ignored_games)
             or (
                 deal.sale_date
-                and self.max_release_date
-                and deal.sale_date < self.max_release_date
+                and self.scrape_date
+                and deal.sale_date < self.scrape_date
             )
             or (
                 deal.title
-                and self.duplicate_games_dict
-                and deal.title in self.duplicate_games_dict
+                and self.duplicate_games
+                and deal.title in self.duplicate_games
             )
         )
 
     # TODO: implement dupe checker
     def find_duplicates(
         self,
-        existing_game_dict: Dict[str, Deal],
-        incoming_game_dict: Dict[str, Deal],
+        old_games: Dict[str, Deal],
+        new_games: Dict[str, Deal],
     ) -> List[DuplicatedDeal]:
 
-        duplicate_games_list = []
-        filt_existing_game_dict = deepcopy(existing_game_dict)
-        filt_incoming_game_dict = {}
+        dupe_list = []
+        old_games_filter = deepcopy(old_games)
+        new_games_filter = {}
 
-        for game_title, incoming_game in incoming_game_dict.items():
+        for game_title, incoming_game in new_games.items():
 
-            if game_title in existing_game_dict:
+            if game_title in old_games:
                 self.logger.debug(
                     f"Identified duplicate {game_title} between incoming data "
                     "and existing data."
                 )
-                duplicate_games_list.append(
+                dupe_list.append(
                     DuplicatedDeal(
-                        original=existing_game_dict[game_title],
+                        original=old_games[game_title],
                         duplicate=incoming_game,
                         type=0,
                     )
                 )
 
-            elif game_title in self.duplicate_games_dict:
+            elif game_title in self.duplicate_games:
                 self.logger.debug(
                     f"Identified existing content-matched duplicate {
                         game_title} "
                     "in incoming data."
                 )
-                duplicate_games_list.append(
+                dupe_list.append(
                     DuplicatedDeal(
                         original=None,
                         duplicate=incoming_game,
@@ -116,13 +119,13 @@ class DealFilter(OutputGen):
                 )
             else:
 
-                filt_incoming_game_dict[game_title] = deepcopy(incoming_game)
+                new_games_filter[game_title] = deepcopy(incoming_game)
 
-        self.duplicate_games_dict.update(
+        self.duplicate_games.update(
             {
                 j.duplicate.game_title: j.duplicate.as_json_entry
-                for j in duplicate_games_list
+                for j in dupe_list
             }
         )
 
-        return duplicate_games_list
+        return dupe_list

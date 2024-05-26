@@ -7,4 +7,7 @@ current_csv_file: deals/scraped/final/deals.csv
 log_file: deals/scraped/final/log.log
 # Path to ignore and duplicate list file
 user_ignore_list: deals/scraped/final/user_ignore_list.json
-duplicate_games_list: deals/scraped/final/duplicate_games_list.json
+dupe_list: deals/scraped/final/dupe_list.json
+
+# isthereanydeals
+deal_palace: "https://isthereanydeal.com/"

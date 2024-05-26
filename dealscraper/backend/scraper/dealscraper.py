@@ -12,16 +12,24 @@ from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 
-from dealscraper.backend.deal import Deal
+from dealscraper.backend.scraper import Deal
 from dealscraper.backend.helpers import DealFilter, OutputGen
 from dealscraper.config.handler import DealScraperConfigHandler
-from dealscraper.data import DEAL_PALACE
 
 
 class DealScraper(OutputGen):
     """Class for the scraper. This scraper is for scraping game deals"""
 
     def __init__(self, config: DealScraperConfigHandler) -> None:
+        """
+        Initialize the DealScraper class.
+
+        Parameters:
+        config (DealScraperConfigHandler): The configuration handler for the scraper.
+
+        Returns:
+        None
+        """
         # config.validate()
 
         # Initialize the output file
@@ -29,29 +37,29 @@ class DealScraper(OutputGen):
         self.config = config
         self.__date_string = date.today().strftime("%Y-%m-%d")
         # dictionary to store the current deals
-        self.current_deal_dict = {}
+        self.current_deals = {}
 
         # no use right now, will use in future
         self.session = requests.Session()
 
         # TODO: implement ignorelist
-        user_ignore_dict = {}
+        ignored_games = {}
         if os.path.isfile(self.config.user_ignore_list):
-            user_ignore_dict = json.load(
+            ignored_games = json.load(
                 open(self.config.user_ignore_list, "r"))
 
         # TODO: implement duplocate games list
-        duplicate_games_dict = {}  # type: Dict[str, str]
-        if os.path.isfile(self.config.duplicate_games_list):
-            duplicate_games_dict = json.load(
-                open(self.config.duplicate_games_list, "r")
+        duplicate_games = {}  # type: Dict[str, str]
+        if os.path.isfile(self.config.dupe_list):
+            duplicate_games = json.load(
+                open(self.config.dupe_list, "r")
             )
 
         # Initialize our job filter
         self.job_filter = DealFilter(
-            user_ignore_dict=user_ignore_dict,
-            duplicate_games_dict=duplicate_games_dict,
-            max_release_date=datetime.today()
+            ignored_games=ignored_games,
+            duplicate_games=duplicate_games,
+            scrape_date=datetime.today()
             - timedelta(days=14),  # self.config.search_config.max_listing_days
             log_level=1,  # maybe make this a setting?
             log_file=self.config.log_file,
@@ -61,7 +69,7 @@ class DealScraper(OutputGen):
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         with Chrome(options=chrome_options) as browser:
-            browser.get(DEAL_PALACE)
+            browser.get(self.config.deal_palace)
             self.page = browser.page_source
 
     def read_current_csv(self) -> Dict[str, Deal]:
@@ -120,7 +128,7 @@ class DealScraper(OutputGen):
         """
         # TODO: read current deal dict from current csv and then compare
         if os.path.isfile(self.config.current_deal_file):
-            self.current_deal_dict = self.read_current_csv()
+            self.current_deals = self.read_current_csv()
 
         # TODO: read current deal dict from current csv nad update duplicate list
         # TODO: compare deals we just scraped with ignore and duplicates

@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from dealscraper.config import BoilerPlateConfig
 
@@ -10,8 +11,9 @@ class DealScraperConfigHandler(BoilerPlateConfig):
         self,
         current_deal_file: str,
         user_ignore_list: str,
-        duplicate_games_list: str,
+        dupe_list: str,
         log_file: str,
+        deal_palace: str
     ):
         """
         Initialize DealScraperConfigHandler with necessary file paths.
@@ -19,8 +21,9 @@ class DealScraperConfigHandler(BoilerPlateConfig):
         Parameters:
         current_deal_file (str): Path to the file where current deals will be stored.
         user_ignore_list (str): Path to the file containing user's ignored games.
-        duplicate_games_list (str): Path to the file containing duplicate games.
+        dupe_list (str): Path to the file containing duplicate games.
         log_file (str): Path to the file where logs will be stored.
+        deal_palace (str): Path to the deal palace.
 
         Returns:
         None
@@ -28,9 +31,10 @@ class DealScraperConfigHandler(BoilerPlateConfig):
         super().__init__()
         self.current_deal_file = current_deal_file
         self.user_ignore_list = user_ignore_list
-        self.duplicate_games_list = duplicate_games_list
+        self.dupe_list = dupe_list
         self.log_file = log_file
-
+        self.deal_palace = deal_palace
+        
     def output_dir_gen(self) -> None:
         """
         This will create the necessary directories in the project folder
@@ -39,7 +43,7 @@ class DealScraperConfigHandler(BoilerPlateConfig):
         for pwd in [
             self.current_deal_file,
             self.log_file,
-            self.duplicate_games_list,
+            self.dupe_list,
             self.user_ignore_list,
         ]:
             file_pwd = os.path.dirname(os.path.abspath(pwd))

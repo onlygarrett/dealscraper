@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 
 from data.resources import HEADERS
 
-
 class Deal:
     """
     This class represents base Deal object.

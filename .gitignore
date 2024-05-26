@@ -184,3 +184,6 @@ $RECYCLE.BIN/
 
 # VScode trash
 .vscode/
+out.png
+out.gv
+mypythonfile.py

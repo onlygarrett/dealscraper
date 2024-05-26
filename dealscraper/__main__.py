@@ -1,6 +1,6 @@
 #!python
 
-from dealscraper.backend.dealscraper import DealScraper
+from dealscraper.backend.scraper import DealScraper
 from dealscraper.config import build_config, get_config_handler
 
 
@@ -18,7 +18,7 @@ def main():
     None
     """
     # This is where the cli parsing abstraction will happen.
-    # args = parse_cli(sys.argv[1:])
+    # args = cli_input(sys.argv[1:])
 
     # Initialize the configuration based on environment variables
     config_env = build_config()
