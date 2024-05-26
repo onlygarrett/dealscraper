@@ -17,6 +17,8 @@ deal sites and keep a running log.
 - The plan is to allow scraping of subsequent pages.
 - CLI support and game ignore lists is the next update.
 
+<img width="600" height="600" src="https://github.com/onlygarrett/dealscraper/blob/fb5bb7bf2eab8b20c843a4d3cce51c85cae29c56/output-diagram.svg" alt="workflow">
+
 # Setup
 
 1. clone the repo
