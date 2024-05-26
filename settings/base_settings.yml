@@ -1,0 +1,10 @@
+# This is the base config for the Deal scraper config
+# Future might include other websites
+
+# Path to current, up-to-date csv
+current_csv_file: deals/scraped/final/deals.csv
+# Path to log file
+log_file: deals/scraped/final/log.log
+# Path to ignore and duplicate list file
+user_ignore_list: deals/scraped/final/user_ignore_list.json
+duplicate_games_list: deals/scraped/final/duplicate_games_list.json

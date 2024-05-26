@@ -1,1 +1,3 @@
+from dealscraper.config.boilerplate_config import BoilerPlateConfig
+from dealscraper.config.builder import build_config, get_config_handler
 from dealscraper.config.handler import DealScraperConfigHandler
