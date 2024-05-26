@@ -16,6 +16,23 @@ class OutputGen:
         message_title: Optional[str] = None,
         message_format: Optional[str] = None,
     ) -> None:
+        """
+        Initialize the OutputGen class.
+
+        This class is a helper to abstract away generating the output of the scrape.
+        It creates a logger with the specified log level and message format,
+        and adds handlers for both stdout and a specified output file.
+
+        Parameters:
+        - output_file (str): The name of the output file where logs will be written.
+        - log_level (Optional[int]): The log level for the logger. If not provided, defaults to 1.
+        - logger_name (Optional[str]): The name of the logger. If not provided, defaults to the class name.
+        - message_title (Optional[str]): The title of the log messages. If not provided, defaults to the logger name.
+        - message_format (Optional[str]): The format of the log messages. If not provided, defaults to a standard format.
+
+        Returns:
+        - None
+        """
 
         logger_name = logger_name or self.__class__.__name__
         message_format = message_format or (

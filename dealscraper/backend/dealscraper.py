@@ -23,35 +23,41 @@ class DealScraper(OutputGen):
 
     def __init__(self, config: DealScraperConfigHandler) -> None:
         # config.validate()
-        super().__init__(output_file=config.log_file)
 
+        # Initialize the output file
+        super().__init__(output_file=config.log_file)
         self.config = config
         self.__date_string = date.today().strftime("%Y-%m-%d")
+        # dictionary to store the current deals
         self.current_deal_dict = {}
 
+        # no use right now, will use in future
         self.session = requests.Session()
 
+        # TODO: implement ignorelist
         user_ignore_dict = {}
         if os.path.isfile(self.config.user_ignore_list):
-            user_ignore_dict = json.load(open(self.config.user_ignore_list, "r"))
+            user_ignore_dict = json.load(
+                open(self.config.user_ignore_list, "r"))
 
+        # TODO: implement duplocate games list
         duplicate_games_dict = {}  # type: Dict[str, str]
         if os.path.isfile(self.config.duplicate_games_list):
             duplicate_games_dict = json.load(
                 open(self.config.duplicate_games_list, "r")
             )
 
-        # WORKING
         # Initialize our job filter
         self.job_filter = DealFilter(
             user_ignore_dict=user_ignore_dict,
             duplicate_games_dict=duplicate_games_dict,
             max_release_date=datetime.today()
             - timedelta(days=14),  # self.config.search_config.max_listing_days
-            log_level=1,
+            log_level=1,  # maybe make this a setting?
             log_file=self.config.log_file,
         )
 
+        # Chromedrive blows but whatever
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         with Chrome(options=chrome_options) as browser:
@@ -112,14 +118,14 @@ class DealScraper(OutputGen):
         """
         Main runner function
         """
+        # TODO: read current deal dict from current csv and then compare
         if os.path.isfile(self.config.current_deal_file):
             self.current_deal_dict = self.read_current_csv()
 
         # TODO: read current deal dict from current csv nad update duplicate list
-        scraped_deals = self.scrape()
-
         # TODO: compare deals we just scraped with ignore and duplicates
 
+        scraped_deals = self.scrape()
         # update current deal csv and output
         if not scraped_deals.empty:
             self.write_to_current_deals_csv(scraped_deals)
@@ -137,6 +143,26 @@ class DealScraper(OutputGen):
         )
 
     def scrape(self) -> pd.DataFrame:
+        """
+        Scrape deals from isthereanydeal.
+
+        This function uses BeautifulSoup to parse the HTML content of the webpage,
+        extracts relevant information about the deals, and returns a pandas DataFrame
+        containing the scraped data.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the scraped deals. The DataFrame has the following columns:
+                - Title: The title of the game.
+                - Price: The sale price of the game.
+                - Original: The original price of the game.
+                - Discount: The discount percentage on the game.
+                - Vendor: The vendor offering the deal.
+                - Bundle: The name of the bundle (currently not implemented).
+                - Date: The date of the deal.
+
+        Raises:
+            Exception: If any error occurs during the scraping process.
+        """
         self.logger.info("Starting scrape of isthereanydeal")
         data = []
         start = time()
@@ -144,7 +170,8 @@ class DealScraper(OutputGen):
 
         games = soup.find_all(class_=re.compile("game svelte"))
         for game in games:
-            name = game.find(class_=re.compile("title svelte")).find("span").text
+            name = game.find(class_=re.compile(
+                "title svelte")).find("span").text
             deals = game.find(class_=re.compile("deal svelte"))
 
             sale_price = deals.find(class_=("ptag__price")).text

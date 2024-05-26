@@ -13,6 +13,18 @@ class DealScraperConfigHandler(BoilerPlateConfig):
         duplicate_games_list: str,
         log_file: str,
     ):
+        """
+        Initialize DealScraperConfigHandler with necessary file paths.
+
+        Parameters:
+        current_deal_file (str): Path to the file where current deals will be stored.
+        user_ignore_list (str): Path to the file containing user's ignored games.
+        duplicate_games_list (str): Path to the file containing duplicate games.
+        log_file (str): Path to the file where logs will be stored.
+
+        Returns:
+        None
+        """
         super().__init__()
         self.current_deal_file = current_deal_file
         self.user_ignore_list = user_ignore_list

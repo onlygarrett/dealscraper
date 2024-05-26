@@ -23,6 +23,19 @@ class DealFilter(OutputGen):
         log_level: int = logging.INFO,
         log_file: str = None,  # pyright: ignore
     ) -> None:
+        """
+        Initialize DealFilter object.
+
+        Parameters:
+        user_ignore_dict (Optional[Dict[str, str]]): A dictionary of game titles to ignore.
+        duplicate_games_dict (Optional[Dict[str, str]]): A dictionary of game titles to match for duplicates.
+        max_release_date (Optional[datetime]): The maximum release date for games to consider.
+        log_level (int): The log level for logging messages. Default is logging.INFO.
+        log_file (str): The file to log messages to. Default is None.
+
+        Returns:
+        None
+        """
         super().__init__(
             log_level=log_level,
             output_file=log_file,
@@ -32,6 +45,7 @@ class DealFilter(OutputGen):
         self.duplicate_games_dict = duplicate_games_dict or {}
         self.max_release_date = max_release_date
 
+    # TODO: implement filter
     def apply_filter(
         self,
         deals: Dict[str, Deal],
@@ -61,6 +75,7 @@ class DealFilter(OutputGen):
             )
         )
 
+    # TODO: implement dupe checker
     def find_duplicates(
         self,
         existing_game_dict: Dict[str, Deal],
@@ -88,7 +103,8 @@ class DealFilter(OutputGen):
 
             elif game_title in self.duplicate_games_dict:
                 self.logger.debug(
-                    f"Identified existing content-matched duplicate {game_title} "
+                    f"Identified existing content-matched duplicate {
+                        game_title} "
                     "in incoming data."
                 )
                 duplicate_games_list.append(
