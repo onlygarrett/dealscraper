@@ -14,7 +14,7 @@ jobs:
         id: make_diagram
         uses: githubocto/repo-visualizer@main
         with:
-          excluded_paths: "/myapp/{.gitignore,pyproject.toml,poetry.lock,LICENSE,readme.md,settings/**}"
+          excluded_globs: "/myapp/{.gitignore,pyproject.toml,poetry.lock,LICENSE,readme.md,settings/**}"
           output_file: "output-diagram.svg"
           artifact_name: "repo-visualizer"
       - name: Get artifact
