@@ -21,9 +21,10 @@ deal sites and keep a running log.
 
 1. clone the repo
 2. `poetry install`
-3. run with `python dealscraper/__main__.py`
+3. `poetry shell`
+4. run with `python dealscraper/__main__.py`
    (**_until I build out the CLI support_**)
-4. CSV's will be output nested in the deals directory
+5. CSV's will be output nested in the deals directory
 
 # TODO:
 
